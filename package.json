@@ -1,0 +1,15 @@
+{
+  "name": "simple-past-crossword",
+  "version": "1.0.0",
+  "description": "A crossword that uses simple past verbs",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dante Ferreira",
+  "license": "ISC",
+  "dependencies": {
+    "jquery-csv": "^1.0.21"
+  }
+}
