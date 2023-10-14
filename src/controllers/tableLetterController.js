@@ -1,6 +1,11 @@
 export default class TableLetterController {
-  constructor(model) {
+  constructor(model, view) {
     this.model = model;
+    this.view = view;
+  }
+
+  render() {
+    this.view.render(this.model.letter);
   }
 
   set isTip(newValue) {

@@ -49,6 +49,7 @@ export default class TableModel {
   size = [0, 0];
   coordinateRestrictions = {};
   amountOfWords = 0;
+  orderedWords = [];
 
   constructor(wordsTarget) {
     this.wordsTarget = wordsTarget;
@@ -66,11 +67,14 @@ export default class TableModel {
 
   updateSize(newLetterCoordinates) {
     this.extremities.update(newLetterCoordinates);
-    this.size[0] = Math.abs(this.extremities.x.max - this.extremities.x.min);
-    this.size[1] = Math.abs(this.extremities.y.max - this.extremities.y.min);
+    this.size[0] =
+      Math.abs(this.extremities.x.max - this.extremities.x.min) + 1;
+    this.size[1] =
+      Math.abs(this.extremities.y.max - this.extremities.y.min) + 1;
   }
 
   placeWord(word) {
+    this.orderedWords.push(word);
     //Adding "all" unavailability on the cells before and after the word
     const coordinatesBeforeWord = getOrientedCoordinates(
       word.coordinates,
@@ -82,8 +86,8 @@ export default class TableModel {
       word.orientation,
       word.word.length
     );
-    this._addCoordinateRestriction(coordinatesBeforeWord, "all");
-    this._addCoordinateRestriction(coordinatesAfterWord, "all");
+    this._addCoordinateRestriction(coordinatesBeforeWord, ["all"], word);
+    this._addCoordinateRestriction(coordinatesAfterWord, ["all"], word);
 
     for (const letter of word.letters) {
       //Adding "same orientation" and "tip" unavailabilities on the sides of the word
@@ -92,7 +96,7 @@ export default class TableModel {
         getOrientedCoordinates(letter.coordinates, word.inverseOrientation, 1),
       ];
       for (const sc of sideCoordinates) {
-        this._addCoordinateRestriction(sc, word.orientation, "tip");
+        this._addCoordinateRestriction(sc, [word.orientation, "tip"], word);
       }
 
       this._placeLetter(letter);
@@ -101,45 +105,48 @@ export default class TableModel {
 
   _placeLetter(letter) {
     if (letter.spaceOccupiedByTheSameLetter) {
-      this._addCoordinateRestriction(letter.coordinates, "all");
+      this._addCoordinateRestriction(letter.coordinates, ["all"], letter.word);
       for (const adjacentCoordinate of letter.adjacentCoordinates) {
-        this._addCoordinateRestriction(adjacentCoordinate, "all");
+        this._addCoordinateRestriction(
+          adjacentCoordinate,
+          ["all"],
+          letter.word
+        );
       }
 
       return;
     }
 
-    this._addCoordinateRestriction(letter.coordinates, letter.word.orientation);
+    this._addCoordinateRestriction(
+      letter.coordinates,
+      [letter.word.orientation],
+      letter.word
+    );
 
     this.updateSize(letter.coordinates);
     this.grid[letter.coordinates] = letter;
     this.letters[letter.letter].push(letter); //Ex: "b": [letter object]
   }
 
-  _addCoordinateRestriction(coordinates, ...newRestrictions) {
-    if (!this.coordinateRestrictions[coordinates])
-      this.coordinateRestrictions[coordinates] = new Set();
+  _addCoordinateRestriction(coordinates, newRestrictions, restrictingWord) {
+    if (!this.coordinateRestrictions[coordinates]) {
+      this.coordinateRestrictions[coordinates] = {
+        set: new Set(),
+        restrictingWord,
+      };
+    } else {
+      const restrictions = this.coordinateRestrictions[coordinates];
+      if (restrictions.set.has("all")) return; //If the "all" unavailability is already present, do nothing
+    }
 
     const restrictions = this.coordinateRestrictions[coordinates];
-
-    if (restrictions.has("all")) return; //If the "all" unavailability is already present, do nothing
     if (newRestrictions.includes("all")) {
-      restrictions.clear();
-      restrictions.add("all");
+      restrictions.set.clear();
+      restrictions.set.add("all");
       return;
     }
 
-    restrictions.add(...newRestrictions);
-
-    /*for (const adjCoords of adj) {
-      const [x, y] = this.arrayCordinates.map(
-        (coord, i) => coord + adjCoords[i]
-      );
-
-      this.table.coordinateRestrictions.add(
-        coordinatesParser.convertToString([x, y])
-      );
-    }*/
+    newRestrictions.forEach((restriction) => restrictions.set.add(restriction));
   }
 }
 

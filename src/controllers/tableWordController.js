@@ -1,6 +1,7 @@
 import getOrientedCoordinates from "../utils/getOrientedCordinates.js";
 import TableLetterModel from "../models/tableLetterModel.js";
 import TableLetterController from "./tableLetterController.js";
+import TableletterView from "../views/tableLetterView.js";
 
 export default class TableWordController {
   constructor(model) {
@@ -15,7 +16,11 @@ export default class TableWordController {
         this,
         model.table
       );
-      const tableLetter = new TableLetterController(tableLetterModel);
+      const tableLetterView = new TableletterView();
+      const tableLetter = new TableLetterController(
+        tableLetterModel,
+        tableLetterView
+      );
 
       if (i == 0 || i == model.word.length - 1) tableLetter.isTip = true;
 

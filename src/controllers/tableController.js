@@ -1,3 +1,4 @@
+import * as coordinatesParser from "../utils/coordinatesParser.js";
 import TableWordModel from "../models/tableWordModel.js";
 import getOrientedCordinates from "../utils/getOrientedCordinates.js";
 import TableWordController from "./tableWordController.js";
@@ -5,8 +6,9 @@ import TableWordController from "./tableWordController.js";
 const orientations = ["horizontal", "vertical"];
 
 export default class TableController {
-  constructor(model) {
+  constructor(model, view) {
     this.model = model;
+    this.view = view;
 
     this.fill();
   }
@@ -23,13 +25,13 @@ export default class TableController {
     );
     const firstWord = new TableWordController(firstWordModel);
     this.model.placeWord(firstWord);
-    console.log(firstWord.word);
+    //console.log(firstWord.word);
 
     while (this.model.amountOfWords < this.model.wordsTarget) {
       const newWord = this.getNewWord();
 
       if (newWord) {
-        console.log(newWord.word);
+        //console.log(newWord.word);
         this.model.placeWord(newWord);
         this.model.amountOfWords++;
       } else {
@@ -105,11 +107,17 @@ export default class TableController {
 
       const restrictions =
         this.model.coordinateRestrictions[letter.coordinates];
+
       if (restrictions) {
+        const isUnfeasibleTip =
+          restrictions.set.has("tip") &&
+          letter.isTip == true &&
+          restrictions.restrictingWord !== candidateTableWord;
+
         if (
-          restrictions.has("all") ||
-          restrictions.has(candidateTableWord.orientation) ||
-          (restrictions.has("tip") && letter.isTip == true)
+          restrictions.set.has("all") ||
+          restrictions.set.has(candidateTableWord.orientation) ||
+          isUnfeasibleTip
         ) {
           return 0;
         }
@@ -123,5 +131,52 @@ export default class TableController {
 
   get grid() {
     return this.model.grid;
+  }
+
+  log() {
+    const extremities = this.model.extremities;
+
+    for (var i = extremities.y.min; i < extremities.y.max + 1; i++) {
+      let line = "";
+
+      for (var j = extremities.x.min; j < extremities.x.max + 1; j++) {
+        const coordinates = coordinatesParser.convertToString([j, i]);
+        let tableLetter = this.model.grid[coordinates]?.letter;
+        if (!tableLetter) tableLetter = " ";
+        line += tableLetter + "  ";
+      }
+      console.log(line);
+    }
+  }
+
+  render() {
+    this.view.render(this.model);
+
+    const extremities = this.model.extremities;
+
+    for (var i = extremities.y.min; i < extremities.y.max + 1; i++) {
+      for (var j = extremities.x.min; j < extremities.x.max + 1; j++) {
+        const coordinates = coordinatesParser.convertToString([j, i]);
+        const letter = this.model.grid[coordinates];
+
+        if (!letter) {
+          this.view.addEmptySquare();
+          continue;
+        }
+        letter.render();
+      }
+    }
+  }
+
+  printOrderedWords() {
+    console.log(this.model.orderedWords.map((w) => w.word));
+  }
+
+  get size() {
+    return this.model.size;
+  }
+
+  get extremities() {
+    return this.model.extremities;
   }
 }
