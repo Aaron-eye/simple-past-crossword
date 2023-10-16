@@ -84,10 +84,10 @@ export default class TableModel {
     const coordinatesAfterWord = getOrientedCoordinates(
       word.coordinates,
       word.orientation,
-      word.word.length
+      word.wordString.length
     );
-    this._addCoordinateRestriction(coordinatesBeforeWord, ["all"], word);
-    this._addCoordinateRestriction(coordinatesAfterWord, ["all"], word);
+    this._addCoordinateRestrictions(coordinatesBeforeWord, ["all"]);
+    this._addCoordinateRestrictions(coordinatesAfterWord, ["all"]);
 
     for (const letter of word.letters) {
       //Adding "same orientation" and "tip" unavailabilities on the sides of the word
@@ -96,43 +96,48 @@ export default class TableModel {
         getOrientedCoordinates(letter.coordinates, word.inverseOrientation, 1),
       ];
       for (const sc of sideCoordinates) {
-        this._addCoordinateRestriction(sc, [word.orientation, "tip"], word);
+        this._addCoordinateRestrictions(sc, [word.orientation, "tip"]);
       }
 
       this._placeLetter(letter);
     }
   }
 
+  _createIntersection(intersectionLetter, newLetter) {
+    const firstWord = newLetter.words[0];
+    firstWord.changeLetter(
+      newLetter.indexOnWord[firstWord.wordString],
+      intersectionLetter
+    );
+
+    intersectionLetter.words.push(newLetter.words[0]);
+  }
+
   _placeLetter(letter) {
     if (letter.spaceOccupiedByTheSameLetter) {
-      this._addCoordinateRestriction(letter.coordinates, ["all"], letter.word);
+      this._addCoordinateRestrictions(letter.coordinates, ["all"]);
       for (const adjacentCoordinate of letter.adjacentCoordinates) {
-        this._addCoordinateRestriction(
-          adjacentCoordinate,
-          ["all"],
-          letter.word
-        );
+        this._addCoordinateRestrictions(adjacentCoordinate, ["all"]);
       }
+
+      this._createIntersection(this.grid[letter.coordinates], letter);
 
       return;
     }
 
-    this._addCoordinateRestriction(
-      letter.coordinates,
-      [letter.word.orientation],
-      letter.word
-    );
+    this._addCoordinateRestrictions(letter.coordinates, [
+      letter.words[0].orientation,
+    ]);
 
     this.updateSize(letter.coordinates);
     this.grid[letter.coordinates] = letter;
     this.letters[letter.letter].push(letter); //Ex: "b": [letter object]
   }
 
-  _addCoordinateRestriction(coordinates, newRestrictions, restrictingWord) {
+  _addCoordinateRestrictions(coordinates, newRestrictions) {
     if (!this.coordinateRestrictions[coordinates]) {
       this.coordinateRestrictions[coordinates] = {
         set: new Set(),
-        restrictingWord,
       };
     } else {
       const restrictions = this.coordinateRestrictions[coordinates];

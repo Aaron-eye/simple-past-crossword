@@ -1,14 +1,20 @@
 export default class TableWord {
   letters = [];
+  correctWord = false;
 
-  constructor(coordinates, word, orientation, table) {
+  constructor(coordinates, wordString, orientation, table) {
     this.coordinates = coordinates;
-    this.word = word;
+    this.wordString = wordString;
+    this.secondWord;
     this.orientation = orientation;
     this.table = table;
   }
 
   get inverseOrientation() {
     return this.orientation == "horizontal" ? "vertical" : "horizontal";
+  }
+
+  changeLetter(letterIndex, newLetter) {
+    this.letters[letterIndex] = newLetter;
   }
 }

@@ -8,12 +8,16 @@ const adj = [
 ];
 
 export default class TableLetterModel {
+  words = [];
   isTip = false;
+  attemptedLetter = "";
+  indexOnWord = {};
+  correctLetter = false;
 
   constructor(coordinates, letter, word, table) {
     this.coordinates = coordinates;
     this.letter = letter;
-    this.word = word;
+    this.words.push(word);
     this.table = table;
   }
 

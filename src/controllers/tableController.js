@@ -2,6 +2,7 @@ import * as coordinatesParser from "../utils/coordinatesParser.js";
 import TableWordModel from "../models/tableWordModel.js";
 import getOrientedCordinates from "../utils/getOrientedCordinates.js";
 import TableWordController from "./tableWordController.js";
+import TableWordView from "../views/tableWordView.js";
 
 const orientations = ["horizontal", "vertical"];
 
@@ -23,21 +24,18 @@ export default class TableController {
       firstOrientation,
       this
     );
-    const firstWord = new TableWordController(firstWordModel);
+    const firstWordView = new TableWordView();
+    const firstWord = new TableWordController(firstWordModel, firstWordView);
     this.model.placeWord(firstWord);
-    //console.log(firstWord.word);
 
     while (this.model.amountOfWords < this.model.wordsTarget) {
       const newWord = this.getNewWord();
 
       if (newWord) {
-        //console.log(newWord.word);
         this.model.placeWord(newWord);
         this.model.amountOfWords++;
       } else {
-        //console.log("Could not finish the crossword!");
         break;
-        //return;
       }
     }
   }
@@ -68,7 +66,10 @@ export default class TableController {
       const tableLetters = this.model.letters[candidateLetter];
 
       for (const tableLetter of tableLetters) {
-        const candidateWordOrientation = tableLetter.word.inverseOrientation;
+        if (tableLetter.words.length > 1) continue; //The candidate letter can only be placed on non-intersected letters
+
+        const candidateWordOrientation =
+          tableLetter.words[0].inverseOrientation;
         const candidateWordCoordinates = getOrientedCordinates(
           tableLetter.coordinates,
           candidateWordOrientation,
@@ -81,8 +82,10 @@ export default class TableController {
           candidateWordOrientation,
           this.model
         );
+        const candidateTableWordView = new TableWordView();
         const candidateTableWord = new TableWordController(
-          candidateTableWordModel
+          candidateTableWordModel,
+          candidateTableWordView
         );
 
         const score = this.getWordScore(candidateTableWord);
@@ -109,15 +112,10 @@ export default class TableController {
         this.model.coordinateRestrictions[letter.coordinates];
 
       if (restrictions) {
-        const isUnfeasibleTip =
-          restrictions.set.has("tip") &&
-          letter.isTip == true &&
-          restrictions.restrictingWord !== candidateTableWord;
-
         if (
           restrictions.set.has("all") ||
           restrictions.set.has(candidateTableWord.orientation) ||
-          isUnfeasibleTip
+          (restrictions.set.has("tip") && letter.isTip == true)
         ) {
           return 0;
         }
@@ -169,7 +167,7 @@ export default class TableController {
   }
 
   printOrderedWords() {
-    console.log(this.model.orderedWords.map((w) => w.word));
+    console.log(this.model.orderedWords.map((w) => w.wordString));
   }
 
   get size() {

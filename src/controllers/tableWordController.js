@@ -4,11 +4,12 @@ import TableLetterController from "./tableLetterController.js";
 import TableletterView from "../views/tableLetterView.js";
 
 export default class TableWordController {
-  constructor(model) {
+  constructor(model, view) {
     this.model = model;
+    this.view = view;
 
-    for (var i = 0; i < model.word.length; i++) {
-      const letter = model.word[i];
+    for (var i = 0; i < model.wordString.length; i++) {
+      const letter = model.wordString[i];
 
       const tableLetterModel = new TableLetterModel(
         getOrientedCoordinates(model.coordinates, model.orientation, i),
@@ -16,16 +17,60 @@ export default class TableWordController {
         this,
         model.table
       );
+      tableLetterModel.indexOnWord[this.wordString] = i;
       const tableLetterView = new TableletterView();
       const tableLetter = new TableLetterController(
         tableLetterModel,
         tableLetterView
       );
 
-      if (i == 0 || i == model.word.length - 1) tableLetter.isTip = true;
+      if (i == 0 || i == model.wordString.length - 1) tableLetter.isTip = true;
 
-      this.letters.push(tableLetter);
+      this.model.letters.push(tableLetter);
     }
+  }
+
+  getSelected() {
+    this.model.letters.forEach((letter) => {
+      letter.getWordSelected();
+    });
+  }
+
+  getUnselected() {
+    this.model.letters.forEach((letter) => {
+      letter.getWordUnselected();
+    });
+  }
+
+  changeLetter(letterIndex, newLetter) {
+    this.model.changeLetter(letterIndex, newLetter);
+    newLetter.indexOnWord[this.model.wordString] = letterIndex;
+  }
+
+  checkAttempt() {
+    const attemptCorrect = this.model.letters.every(
+      (letter) => letter.isAttemptCorrect
+    );
+    if (attemptCorrect) {
+      this.model.letters.forEach((letter) => {
+        letter.correctLetter = true;
+        letter.getCorrect();
+      });
+    } else {
+      this.model.letters.forEach((letter) => {
+        letter.getIncorrect();
+      });
+    }
+
+    return attemptCorrect;
+  }
+
+  get correctWord() {
+    return this.model.correctWord;
+  }
+
+  get allLettersAttempted() {
+    return this.model.letters.every((letter) => letter.attempted);
   }
 
   get letters() {
@@ -40,11 +85,15 @@ export default class TableWordController {
     return this.model.orientation;
   }
 
-  get word() {
-    return this.model.word;
+  get wordString() {
+    return this.model.wordString;
   }
 
   get inverseOrientation() {
     return this.model.inverseOrientation;
+  }
+
+  get length() {
+    return this.model.wordString.length;
   }
 }
