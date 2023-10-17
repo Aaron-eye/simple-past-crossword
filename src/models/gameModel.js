@@ -1,5 +1,5 @@
 export default class GameModel {
-  wordsTarget = 2;
+  wordsTarget = 15;
   tableBuildingTime = 200;
   wordAttempts = 0;
   correctAttempts = 0;
