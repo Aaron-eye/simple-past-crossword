@@ -24,6 +24,11 @@ export default class TableWordController {
         tableLetterView
       );
 
+      if (i == 0) {
+        this.model.head = tableLetter;
+        tableLetter.headOf = this;
+      }
+
       if (i == 0 || i == model.wordString.length - 1) tableLetter.isTip = true;
 
       this.model.letters.push(tableLetter);
@@ -31,12 +36,14 @@ export default class TableWordController {
   }
 
   getSelected() {
+    this.model.hint.highlight();
     this.model.letters.forEach((letter) => {
       letter.getWordSelected();
     });
   }
 
   getUnselected() {
+    this.model.hint.stopHighlighting();
     this.model.letters.forEach((letter) => {
       letter.getWordUnselected();
     });
@@ -57,12 +64,37 @@ export default class TableWordController {
         letter.getCorrect();
       });
     } else {
+      this.model.attemptLocker = true;
       this.model.letters.forEach((letter) => {
         letter.getIncorrect();
       });
     }
 
     return attemptCorrect;
+  }
+
+  set index(value) {
+    this.model.index = value;
+  }
+
+  set attemptLocker(value) {
+    this.model.attemptLocker = value;
+  }
+
+  set head(value) {
+    this.model.head = value;
+  }
+
+  set hint(value) {
+    this.model.hint = value;
+  }
+
+  get index() {
+    return this.model.index;
+  }
+
+  get attemptLocker() {
+    return this.model.attemptLocker;
   }
 
   get correctWord() {

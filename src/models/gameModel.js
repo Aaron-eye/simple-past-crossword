@@ -1,17 +1,20 @@
 export default class GameModel {
-  unselectPreviousLetter() {
-    this.selectedLetter?.getUnselected();
-    this.selectedWords?.forEach((word) => word.getUnselected());
+  wordsTarget = 2;
+  tableBuildingTime = 200;
+  wordAttempts = 0;
+  correctAttempts = 0;
+  won = false;
 
+  start() {
+    this.startTime = Date.now();
+  }
+
+  unselectPreviousLetter() {
     this.selectedLetter = null;
     this.selectedWords = null;
   }
 
   selectLetter(letter) {
-    if (letter.correctLetter) return;
-
-    this.unselectPreviousLetter();
-
     this.selectedLetter = letter;
     letter.getSelected();
     this.selectedWords = letter.words;

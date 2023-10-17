@@ -1,6 +1,7 @@
 export default class TableWord {
   letters = [];
   correctWord = false;
+  attemptLocker = false;
 
   constructor(coordinates, wordString, orientation, table) {
     this.coordinates = coordinates;

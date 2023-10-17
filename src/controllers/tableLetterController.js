@@ -1,5 +1,3 @@
-import game from "./gameController.js";
-
 export default class TableLetterController {
   constructor(model, view) {
     this.model = model;
@@ -8,7 +6,25 @@ export default class TableLetterController {
 
   render() {
     this.view.render(this.model.letter);
-    this.view.checkClick(this._handleClick.bind(this));
+
+    if (this.model.headOf) {
+      this.view.renderWordIndex(
+        this.headOf.index,
+        this.model.headOf.orientation
+      );
+    }
+
+    this.view.setFontSize();
+
+    window.addEventListener("resize", () => {
+      if (this.model.headOf)
+        this.view.setIndexElementPosition(this.model.headOf.orientation);
+      this.view.setFontSize();
+    });
+  }
+
+  addClickListener(handler) {
+    this.view.checkClick(handler);
   }
 
   getSelected() {
@@ -35,15 +51,17 @@ export default class TableLetterController {
     this.view.getIncorrect();
   }
 
-  _handleClick() {
-    game.selectLetter(this);
-    if (this.words.length === 1) {
-      game.wordBeingTyped = this.model.words[0];
-    } else game.wordBeingTyped = null;
+  updateAttempt(attemptedLetter) {
+    this.model.attemptedLetter = attemptedLetter;
+    this.view.update(attemptedLetter);
   }
 
   set isTip(newValue) {
     this.model.isTip = newValue;
+  }
+
+  set headOf(newValue) {
+    this.model.headOf = newValue;
   }
 
   set correctLetter(value) {
@@ -58,12 +76,20 @@ export default class TableLetterController {
     return this.model.attemptedLetter !== "";
   }
 
+  get attemptedLetter() {
+    return this.model.attemptedLetter;
+  }
+
   get isAttemptCorrect() {
     return this.model.attemptedLetter == this.model.letter;
   }
 
   get isTip() {
     return this.model.isTip;
+  }
+
+  get headOf() {
+    return this.model.headOf;
   }
 
   get spaceOccupiedByTheSameLetter() {

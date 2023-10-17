@@ -1,3 +1,4 @@
+import * as coordinatesParser from "../utils/coordinatesParser.js";
 import getOrientedCoordinates from "../utils/getOrientedCordinates.js";
 import Extremities from "./extremities.js";
 
@@ -46,10 +47,9 @@ export default class TableModel {
   letters = {};
   grid = {};
   remainingWords = {};
+  words = [];
   size = [0, 0];
   coordinateRestrictions = {};
-  amountOfWords = 0;
-  orderedWords = [];
 
   constructor(wordsTarget) {
     this.wordsTarget = wordsTarget;
@@ -74,7 +74,12 @@ export default class TableModel {
   }
 
   placeWord(word) {
-    this.orderedWords.push(word);
+    word.index = this.words.length;
+    this.words.push(word);
+
+    //Adding "head" unavailability to the head of the word
+    this._addCoordinateRestrictions(word.coordinates, ["head"]);
+
     //Adding "all" unavailability on the cells before and after the word
     const coordinatesBeforeWord = getOrientedCoordinates(
       word.coordinates,
@@ -109,6 +114,11 @@ export default class TableModel {
       newLetter.indexOnWord[firstWord.wordString],
       intersectionLetter
     );
+
+    if (newLetter.headOf) {
+      newLetter.headOf.head = intersectionLetter;
+      intersectionLetter.headOf = newLetter.headOf;
+    }
 
     intersectionLetter.words.push(newLetter.words[0]);
   }
@@ -152,6 +162,21 @@ export default class TableModel {
     }
 
     newRestrictions.forEach((restriction) => restrictions.set.add(restriction));
+  }
+
+  get lettersList() {
+    const letters = [];
+
+    const extremities = this.extremities;
+    for (var i = extremities.y.min; i < extremities.y.max + 1; i++) {
+      for (var j = extremities.x.min; j < extremities.x.max + 1; j++) {
+        const coordinates = coordinatesParser.convertToString([j, i]);
+        const letter = this.grid[coordinates];
+        letters.push(letter);
+      }
+    }
+
+    return letters;
   }
 }
 

@@ -18,12 +18,19 @@
     <h1>Simple Past Crossword</h1>
     <section class="game-section">
       <div class="game-info">
-        <ul>
+        <ul class="game-state">
           <li>Play time: <span class="play-time"></span></li>
-          <li>Word attempts: <span class="word-attempts"></span></li>
+          <li>Word attempts: <span class="word-attempts">0</span></li>
         </ul>
+
+        <h2>Hints</h2>
+        <ul class="word-hints"></ul>
       </div>
-      <div class="crossword-grid"></div>
+      <div class="crossword-container">
+        <div class="grid-container">
+          <div class="crossword-grid"></div>
+        </div>
+      </div>
     </section>
   </body>
   <script type="module" src="src/index.js"></script>

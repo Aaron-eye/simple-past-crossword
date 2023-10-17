@@ -1,22 +1,84 @@
 @import url("variables.css");
 
-body {
-  margin: 0;
+* {
   box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
 }
 
 h1 {
   text-align: center;
 }
 
+h2 {
+  text-align: center;
+  font-size: 2rem;
+}
+
 section {
-  padding: 4rem 0;
-  margin: 0 18rem;
+  margin: 0;
 }
 
 .game-section {
-  /* display: flex;
-  justify-content: center; */
+  flex: 1;
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  grid-template-rows: 1fr;
+  height: 100%;
+  margin: 0;
+}
+
+.game-info {
+  padding: 2rem 4rem;
+  margin: 0;
+
+  background-color: var(--gray);
+  color: white;
+}
+
+.game-info ul {
+  list-style-type: none;
+}
+
+.game-state {
+  margin: 0 0 4rem;
+  display: flex;
+  gap: 4rem;
+  justify-content: center;
+}
+
+.word-hints {
+  padding: 0;
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.word-hint {
+  color: var(--light-gray);
+  transition: color 0.5s;
+}
+
+.word-hint.highlighted {
+  color: white;
+  text-decoration: underline;
+}
+
+.crossword-container {
+  padding: 2rem 3.2rem;
+}
+
+.grid-container {
+  margin: 3.2rem auto;
 }
 
 .crossword-grid {
@@ -30,6 +92,8 @@ section {
 }
 
 .crossword-letter-cell {
+  position: relative;
+
   background-color: white;
   outline: 2px solid var(--light-gray-2);
   display: flex;
@@ -39,6 +103,8 @@ section {
   color: var(--gray);
   transition: transform 0.1s;
   transition: outline 0.05s;
+
+  box-sizing: border-box;
 }
 
 .crossword-letter-cell.word-selected {
@@ -50,13 +116,14 @@ section {
 
 .crossword-letter-cell.correct {
   background-color: var(--light-gray);
-  outline: 4px solid var(--green);
+  outline: 2px solid var(--green);
   color: var(--green);
   z-index: 2;
 }
 
 .crossword-letter-cell.incorrect {
   outline: solid var(--red);
+  color: var(--red);
   z-index: 2;
 }
 
@@ -72,4 +139,12 @@ section {
   font-family: "Josefin Sans", sans-serif;
 
   transform: translateY(2px);
+}
+
+.word-index {
+  position: absolute;
+}
+
+.win-message {
+  margin: 0 0 3.2rem;
 }

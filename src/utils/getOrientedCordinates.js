@@ -1,9 +1,9 @@
 import * as coordinatesParser from "../utils/coordinatesParser.js";
 
-export default (coordinates, orientation, length) => {
+export default (coordinates, orientation, length, parseToString = true) => {
   let [x, y] = coordinatesParser.convertToArray(coordinates);
   if (orientation == "horizontal") x += length;
   else y += length;
 
-  return coordinatesParser.convertToString([x, y]);
+  return parseToString ? coordinatesParser.convertToString([x, y]) : [x, y];
 };

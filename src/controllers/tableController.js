@@ -28,13 +28,13 @@ export default class TableController {
     const firstWord = new TableWordController(firstWordModel, firstWordView);
     this.model.placeWord(firstWord);
 
-    while (this.model.amountOfWords < this.model.wordsTarget) {
+    while (this.model.words.length < this.model.wordsTarget) {
       const newWord = this.getNewWord();
 
       if (newWord) {
         this.model.placeWord(newWord);
-        this.model.amountOfWords++;
       } else {
+        this.invalid = true;
         break;
       }
     }
@@ -115,7 +115,8 @@ export default class TableController {
         if (
           restrictions.set.has("all") ||
           restrictions.set.has(candidateTableWord.orientation) ||
-          (restrictions.set.has("tip") && letter.isTip == true)
+          (restrictions.set.has("tip") && letter.isTip == true) ||
+          (restrictions.set.has("head") && letter.headOf)
         ) {
           return 0;
         }
@@ -131,7 +132,7 @@ export default class TableController {
     return this.model.grid;
   }
 
-  log() {
+  /*log() {
     const extremities = this.model.extremities;
 
     for (var i = extremities.y.min; i < extremities.y.max + 1; i++) {
@@ -145,29 +146,22 @@ export default class TableController {
       }
       console.log(line);
     }
-  }
+  }*/
 
   render() {
     this.view.render(this.model);
 
-    const extremities = this.model.extremities;
-
-    for (var i = extremities.y.min; i < extremities.y.max + 1; i++) {
-      for (var j = extremities.x.min; j < extremities.x.max + 1; j++) {
-        const coordinates = coordinatesParser.convertToString([j, i]);
-        const letter = this.model.grid[coordinates];
-
-        if (!letter) {
-          this.view.addEmptySquare();
-          continue;
-        }
-        letter.render();
+    for (const letter of this.model.lettersList) {
+      if (!letter) {
+        this.view.addEmptySquare();
+        continue;
       }
+      letter.render();
     }
   }
 
   printOrderedWords() {
-    console.log(this.model.orderedWords.map((w) => w.wordString));
+    console.log(this.model.words.map((w) => w.wordString));
   }
 
   get size() {
@@ -176,5 +170,13 @@ export default class TableController {
 
   get extremities() {
     return this.model.extremities;
+  }
+
+  get words() {
+    return this.model.words;
+  }
+
+  get lettersList() {
+    return this.model.lettersList;
   }
 }
