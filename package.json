@@ -9,7 +9,5 @@
   },
   "author": "Dante Ferreira",
   "license": "ISC",
-  "dependencies": {
-    "jquery-csv": "^1.0.21"
-  }
+  "dependencies": {}
 }
