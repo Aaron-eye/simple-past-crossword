@@ -3,10 +3,11 @@ export default class GameModel {
   tableBuildingTime = 200;
   wordAttempts = 0;
   correctAttempts = 0;
-  won = false;
+  state = "not-started";
 
   start() {
     this.startTime = Date.now();
+    this.state = "playing";
   }
 
   unselectPreviousLetter() {

@@ -10,20 +10,29 @@
       rel="stylesheet"
     />
 
+    <link rel="stylesheet" href="/css/general.css" />
     <link rel="stylesheet" href="css/style.css" />
 
     <title>Simple Past Crossword</title>
   </head>
   <body>
-    <h1>Simple Past Crossword</h1>
+    <div class="navbar">
+      <ul class="navbar-list">
+        <li class="navbar-item"><a class="home" href="/index.html">Home</a></li>
+      </ul>
+      <h1>Simple Past Crossword</h1>
+    </div>
     <section class="game-section">
+      <div class="start-game-container">
+        <button class="start-btn">Start Game</button>
+      </div>
       <div class="game-info">
         <ul class="game-state">
-          <li>Play time: <span class="play-time"></span></li>
+          <li>Play time: <span class="play-time">0:00</span></li>
           <li>Word attempts: <span class="word-attempts">0</span></li>
         </ul>
 
-        <h2>Hints</h2>
+        <h2 class="hints-title">Hints</h2>
         <ul class="word-hints"></ul>
       </div>
       <div class="crossword-container">

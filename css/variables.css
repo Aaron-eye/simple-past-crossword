@@ -1,4 +1,10 @@
 :root {
+  --light-text-1: rgb(221, 221, 221);
+  --light-text-2: rgb(243, 243, 243);
+  --light-blue: rgb(204, 235, 236);
+  --transparent-black: rgba(45, 48, 49, 0.158);
+  --dark-text: rgb(19, 20, 20);
+  --primary: rgb(0, 62, 107);
   --gray: #7e7e7e;
   --light-gray-2: #aaaaaa;
   --light-gray: #dddddd;

@@ -125,19 +125,27 @@ class GameController {
   }
 
   _win() {
-    this.model.won = true;
+    this.model.state = "won";
     this.view.showWinMessage();
   }
 
   _updateTimer() {
     this.view.updateTimer(Date.now() - this.model.startTime);
 
-    if (!this.model.won) setTimeout(this._updateTimer.bind(this), 1000);
+    if ((this.model.state = "playing"))
+      setTimeout(this._updateTimer.bind(this), 1000);
   }
 
   _handleTurnback() {
-    this.selectedLetter.updateAttempt("");
+    if (
+      this.selectedLetter.isTip &&
+      this.selectedLetter.attemptedLetter !== ""
+    ) {
+      this.selectedLetter.updateAttempt("");
+      return;
+    }
     this._goToPreviousLetter();
+    this.selectedLetter.updateAttempt("");
   }
 
   _goToNextLetter() {
@@ -201,14 +209,14 @@ class GameController {
   _handleLetterAttempt(letter) {
     if (!this.selectedLetter) return;
 
-    const previousLetterOnWordBeingTyped =
+    /*const previousLetterOnWordBeingTyped =
       this.wordBeingTyped.letters[this.indexOnWordBeingTyped - 1];
     if (
       previousLetterOnWordBeingTyped &&
       previousLetterOnWordBeingTyped.correctLetter &&
       letter === previousLetterOnWordBeingTyped.letter
     )
-      return;
+      return;*/
     this.selectedLetter.updateAttempt(letter);
 
     if (!this.wordBeingTyped) return;

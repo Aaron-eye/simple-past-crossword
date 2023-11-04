@@ -1,4 +1,4 @@
-@import url("variables.css");
+@import url("./variables.css");
 
 * {
   box-sizing: border-box;
@@ -15,11 +15,29 @@ body {
   margin: 0;
 }
 
+.navbar {
+  color: var(--dark-text);
+  padding: 0.75rem 4rem;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--transparent-black);
+}
+
+/*.home {
+  width: fit-content;
+  color: var(--dark-text);
+  font-size: 1.5rem;
+}*/
+
 h1 {
+  color: var(--dark-text);
+  margin: 0;
   text-align: center;
 }
 
 h2 {
+  color: var(--dark-text);
   text-align: center;
   font-size: 2rem;
 }
@@ -29,6 +47,8 @@ section {
 }
 
 .game-section {
+  position: relative;
+
   flex: 1;
   display: grid;
   grid-template-columns: 5fr 7fr;
@@ -41,7 +61,7 @@ section {
   padding: 2rem 4rem;
   margin: 0;
 
-  background-color: var(--gray);
+  background-color: var(--primary);
   color: white;
 }
 
@@ -54,6 +74,10 @@ section {
   display: flex;
   gap: 4rem;
   justify-content: center;
+}
+
+.hints-title {
+  color: var(--light-text-2);
 }
 
 .word-hints {
@@ -147,4 +171,33 @@ section {
 
 .win-message {
   margin: 0 0 3.2rem;
+}
+
+.start-game-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  background-color: white;
+}
+
+.start-btn {
+  display: block;
+
+  padding: 2rem 4rem;
+  border-radius: 1rem;
+  margin: auto;
+
+  font-size: 2rem;
+  background-color: var(--primary);
+  color: var(--light-text-2);
+  transition: transform 0.2s;
+}
+
+.start-btn:hover {
+  transform: scale(1.05);
 }
